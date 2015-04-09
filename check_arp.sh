@@ -33,7 +33,7 @@ function check_passive() {
             #add it to the array of current collisions
             collisions[${address}]="${maclist[@]}"
            #If this exact collision has happened already, don't report it again.
-            if [ collisions_previous[${address}] != collisions[${address} ];then
+            if [ collisions_previous[${address}] != collisions[${address}] ];then
                 echo "${progname}: COLLISION! on ${address} between ${maclist}"
                 collisions_previous[${address}]="${maclist[@]}"
             fi
