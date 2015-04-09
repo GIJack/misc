@@ -1,6 +1,6 @@
 #!/bin/bash
-# This script checks certian IPs for collisions passively by checking the arp cache
-# USAGE" ./check_arp.sh <list of IPs to watch>
+# This script checks certian IPs for collisions passively by watching the arp cache
+# USAGE: ./check_arp.sh <list of IPs to watch>
 # Jack @ nyi.net, Licensed under the FreeBSD license https://www.freebsd.org/copyright/freebsd-license.html
 
 ############SETTINGS##################
@@ -33,7 +33,7 @@ function check_passive() {
             #add it to the array of current collisions
             collisions[${address}]="${maclist[@]}"
            #If this exact collision has happened already, don't report it again.
-            if [ collisions_previous[${address}] != collisions[${address} ];
+            if [ collisions_previous[${address}] != collisions[${address} ];then
                 echo "${progname}: COLLISION! on ${address} between ${maclist}"
                 collisions_previous[${address}]="${maclist[@]}"
             fi
@@ -64,7 +64,7 @@ function main() {
 }
 
 if [ $daemon == "yes" ];then
-    main >> $logfile &
+    main ${@} >> $logfile &
 else
-    main
+    main ${@}
 fi
