@@ -5,7 +5,7 @@
 
 ############SETTINGS##################
 #Output to logfile instead of stdout #
-#also, run in the background         #
+# and, run in the background         #
 daemon="no"                          # 
 logfile="${PWD}/passive_arp.log"     #
 # Time in seconds to poll the arp    #
