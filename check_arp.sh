@@ -26,15 +26,16 @@ function check_passive() {
     collisions=()
     for address in ${address_list[@]};do
         #first make an array with all the MAC addresses on the arp table for a given IP.
-        maclist=($(arp -na|grep ${address}|cut -d " " -f 4))
+        maclist=($(arp -na ${address}|cut -d " " -f 4))
         ERRORS=$(($ERRORS+$?))
         # IP addresses should only have on MAC address.
         if [ ${#maclist[@]} -gt 1 ];then
             #add it to the array of current collisions
-            collisions[${address}]="${maclist[@]}"
+            echo $address
+            collisions[${address}]=${maclist[@]}
            #If this exact collision has happened already, don't report it again.
             if [ collisions_previous[${address}] != collisions[${address}] ];then
-                echo "${progname}: COLLISION! on ${address} between ${maclist}"
+                echo "$(date) ${progname}: COLLISION! on ${address} between ${maclist}"
                 collisions_previous[${address}]="${maclist[@]}"
             fi
         fi
@@ -42,12 +43,12 @@ function check_passive() {
 }
 
 function _stop() {
-    echo "${progname}: shutting down"
+    echo "$(date) ${progname}: shutting down"
     exit ${1}
 }
 
 function _start() {
-    echo "${progname}: Starting up, checking ${address_list[@]} for IP collisions"
+    echo "$(date) ${progname}:  Starting up, checking ${address_list[@]} for IP collisions"
     while true;do
         check_passive
         sleep $check_interval
@@ -56,7 +57,7 @@ function _start() {
 
 function main() {
     if [ ${#} -lt "1" ];then
-        echo "${progname}: You need at least one IP to check"
+        echo "$(date) ${progname}: You need at least one IP to check"
         _stop 1
     fi
     trap "_stop ${ERRORS}" SIGTERM SIGINT
