@@ -2,14 +2,13 @@
 import sys
 import subprocess
 import time
-import signal
 
 #config
+global config
 class config:
-    daemon         = False
+    daemon         = True
     logfile        = "passive_arp.log"
     check_interval = .333
-global config
 ##end config
 
 address_list   = sys.argv[1:]
@@ -39,22 +38,23 @@ def check_passive(collisions_previous,address_list):
     return collisions
 
 def report_collision(address,maclist):
-    '''This function outputs to either console, or log, depending on config'''
+    '''report a collision as it happens, output to either logfile or console'''
     line = time.asctime() + " " + progname +": Collision of " + address + " between " + " ".join(maclist) 
     print(line)
     if config.daemon == True:
         outfile = open(config.logfile,"a")
-        outfile.write(line)
+        outfile.write(line+"\n")
         
 def report_log(textString):
-    '''This function either prints to console, log or both'''
+    '''print an abritrary string to the logs/console'''
     line = time.asctime() + progname + ": " + textString
     print(line)
     if config.daemon == True:
         outfile = open(config.logfile,"a")
-        outfile.write(line)
+        outfile.write(line+"\n")
 
 def _start(address_list):
+    '''Start listening for ARP collisions'''
     report_log("Staring up checking "+" ".join(address_list)+" for IP collisions")
     while True:
         collisions = check_passive(collisions_previous,address_list)
@@ -64,14 +64,18 @@ def _start(address_list):
         time.sleep(config.check_interval)
 
 def _stop(exit_code,frame):
+    '''Stop program and shut down'''
     report_log("shutting down")
     sys.exit(exit_code)
 
 def main():
+    '''main program'''
+    import signal
     if len(sys.argv) < 2:
         report_log("You need at least one IP to check")
         _stop(1,None)
     signal.signal(signal.SIGINT,_stop)
+    signal.signal(signal.SIGTERM,_stop)
     _start(address_list)
 
 if __name__ == "__main__":
