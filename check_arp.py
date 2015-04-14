@@ -1,15 +1,18 @@
 #!/usr/bin/env python
-import sys
+# This script checks certian IPs for collisions passively by watching the arp cache
+# USAGE: ./check_arp.py <list of IPs to watch>
+# Jack @ nyi.net, Licensed under the FreeBSD license https://www.freebsd.org/copyright/freebsd-license.html
+
 import subprocess
 import time
 
-#config
-global config
-class config:
-    daemon         = True
-    logfile        = "passive_arp.log"
-    check_interval = .333
-##end config
+###########config#######################
+global config                          #
+class config:                          #
+    daemon         = True              #
+    logfile        = "passive_arp.log" #
+    check_interval = .333              #
+###########end config###################
 
 address_list   = sys.argv[1:]
 global progname
@@ -36,6 +39,32 @@ def check_passive(collisions_previous,address_list):
                 print(maclist)
                 report_collision(address,maclist)
     return collisions
+
+def check_active(collisions_previous,address_list):
+    '''This function uses arp-scan to actively look for collisions'''
+    collisions = {}
+    for address in address_list:
+        try:
+            rawinput = str(subprocess.check_output(["arp-scan",address])).split('\\n')
+        except:
+            errors += 1
+            continue
+        for i in range(4):
+            rawinput.pop()
+        del(rawinput[0:2])
+        maclist = []
+        for line in rawinput:
+            maclist.append( line.split('\\t')[1] )
+        if len(maclist) > 1:
+            collisions[address] = maclist
+            if address not in collisions_previous:
+                report_collision(address,maclist)
+    return collisions
+
+
+def check_active(collisions_previous,address_list):
+    '''This function uses arp-scan to actively look for collisions'''
+    
 
 def report_collision(address,maclist):
     '''report a collision as it happens, output to either logfile or console'''
