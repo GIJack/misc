@@ -9,7 +9,7 @@ import time
 ###########config#######################
 global config                          #
 class config:                          #
-    daemon         = True              #
+    uselog         = False             #
     logfile        = "passive_arp.log" #
     check_interval = .333              #
 ###########end config###################
@@ -87,25 +87,25 @@ def report_collision(address,maclist):
     '''report a collision as it happens, output to either logfile or console'''
     line = time.asctime() + " " + progname +": Collision of " + address + " between " + " ".join(maclist) 
     print(line)
-    if config.daemon == True:
+    if config.uselog == True:
         outfile = open(config.logfile,"a")
         outfile.write(line+"\n")
         outfile.close()
         
 def report_macchange(address,newmac,oldmac):
     '''report a collision as it happens, output to either logfile or console'''
-    line = time.asctime() + " " + progname +": Mac Address for " + address + " changed from" + " ".join(oldmac) + " to " + " ".join(newmac)
+    line = time.asctime() +' '+ progname +": Mac Address for " + address + " changed from" + " ".join(oldmac) + " to " + " ".join(newmac)
     print(line)
-    if config.daemon == True:
+    if config.uselog == True:
         outfile = open(config.logfile,"a")
         outfile.write(line+"\n")
         outfile.close()
         
 def report_log(textString):
     '''print an abritrary string to the logs/console'''
-    line = time.asctime() + progname + ": " + textString
+    line = time.asctime() +' '+ progname + ": " + textString
     print(line)
-    if config.daemon == True:
+    if config.uselog == True:
         outfile = open(config.logfile,"a")
         outfile.write(line+"\n")
         outfile.close()
