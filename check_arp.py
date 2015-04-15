@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# This script checks certian IPs for collisions passively by watching the arp cache
+# This script checks certian IPs for collisions and mac address changes passively by watching the arp cache
 # USAGE: ./check_arp.py <list of IPs to watch>
 # Jack @ nyi.net, Licensed under the FreeBSD license https://www.freebsd.org/copyright/freebsd-license.html
 import sys
@@ -33,6 +33,8 @@ def check_passive(collisions_previous,address_list):
         except:
             errors += 1
             continue
+        if "no match found" in str(rawinput):
+            continue
         for line in rawinput:
             maclist.append( line.split()[3] )
         #If there is more than one mac address per IP, raise the alarm, we have a collision
@@ -42,7 +44,6 @@ def check_passive(collisions_previous,address_list):
                 print(maclist)
                 report_collision(address,maclist)
 
-             
         #now check if the mac address has changed.
         try:
             if mactable[address] != maclist and address in mactable:
