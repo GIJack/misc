@@ -2,7 +2,7 @@
 # This script checks certian IPs for collisions passively by watching the arp cache
 # USAGE: ./check_arp.py <list of IPs to watch>
 # Jack @ nyi.net, Licensed under the FreeBSD license https://www.freebsd.org/copyright/freebsd-license.html
-
+import sys
 import subprocess
 import time
 
@@ -20,6 +20,8 @@ progname       = sys.argv[0]
 collisions_previous = {}
 global errors
 errors         = 0
+global mactable
+mactable       = {}
 
 def check_passive(collisions_previous,address_list):
     '''This function checks and returns a dictionary of collisions to the user'''
@@ -33,11 +35,25 @@ def check_passive(collisions_previous,address_list):
             continue
         for line in rawinput:
             maclist.append( line.split()[3] )
+        #If there is more than one mac address per IP, raise the alarm, we have a collision
         if len(maclist) > 1:
             collisions[address] = maclist
             if address not in collisions_previous:
                 print(maclist)
                 report_collision(address,maclist)
+
+             
+        #now check if the mac address has changed.
+        try:
+            if mactable[address] != maclist and address in mactable:
+                repot_macchange( address, maclist, mactable[address] )
+        except KeyError:
+            if len(maclist) >= 1:
+                report_log( "Added IP " +address+" with mac(s) " + " ".join(maclist) )
+
+        #update the mactable with the new address
+        mactable[address] = maclist
+            
     return collisions
 
 def check_active(collisions_previous,address_list):
@@ -73,6 +89,16 @@ def report_collision(address,maclist):
     if config.daemon == True:
         outfile = open(config.logfile,"a")
         outfile.write(line+"\n")
+        outfile.close()
+        
+def report_macchange(address,newmac,oldmac):
+    '''report a collision as it happens, output to either logfile or console'''
+    line = time.asctime() + " " + progname +": Mac Address for " + address + " changed from" + " ".join(oldmac) + " to " + " ".join(newmac)
+    print(line)
+    if config.daemon == True:
+        outfile = open(config.logfile,"a")
+        outfile.write(line+"\n")
+        outfile.close()
         
 def report_log(textString):
     '''print an abritrary string to the logs/console'''
@@ -81,6 +107,7 @@ def report_log(textString):
     if config.daemon == True:
         outfile = open(config.logfile,"a")
         outfile.write(line+"\n")
+        outfile.close()
 
 def _start(address_list):
     '''Start listening for ARP collisions'''
