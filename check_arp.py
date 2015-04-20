@@ -1,17 +1,18 @@
 #!/usr/bin/env python
-# This script checks specified IP addresses for collisions and mac address
-# changes by watching the arp cache, and optionally using arp-scan
+'''
+ This script checks specified IP addresses for collisions and mac address
+ changes by watching the arp cache, and optionally using arp-scan
 
-# USAGE: ./check_arp.py <list of IPs to watch>
+ USAGE: ./check_arp.py <list of IPs to watch>
 
-# Jack @ nyi.net, Licensed under the FreeBSD license
-# https://www.freebsd.org/copyright/freebsd-license.html
+ Jack @ nyi.net, Licensed under the FreeBSD license
+ https://www.freebsd.org/copyright/freebsd-license.html
 
-
-# NOTE: if using active scan, you need the "arp scan" program installed
-# http://www.nta-monitor.com/tools/arp-scan/
-# To set the correct permissions in linux, type on the command line:
-# setcap "cap_net_admin,cap_net_raw+eip" $(which arp-scan)
+ NOTE: if using active scan, you need the "arp scan" program installed
+ http://www.nta-monitor.com/tools/arp-scan/
+ To set the correct permissions in linux, type on the command line:
+ setcap "cap_net_admin,cap_net_raw+eip" $(which arp-scan)
+'''
 
 ###########config########################################
 global config                                           #
