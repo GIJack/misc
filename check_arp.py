@@ -24,7 +24,7 @@ class config:                                           #
     # True or False, case sensative.                    #
     # Turn logging on and off, and location of log file #
     uselog         = False                              #
-    logfile        = "passive_arp.log"                  #
+    logfile        = "check_arp.log"                    #
     # time in seconds between arp checks                #
     check_interval = .333                               #
     # in addition to passively checking arp cache, use  #
