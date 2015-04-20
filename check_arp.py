@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # This script checks specified IP addresses for collisions and mac address
-# changes passively, by watching the arp cache
+# changes by watching the arp cache, and optionally using arp-scan
 
 # USAGE: ./check_arp.py <list of IPs to watch>
 
