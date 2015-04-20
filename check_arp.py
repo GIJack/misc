@@ -13,11 +13,6 @@
 # To set the correct permissions in linux, type on the command line:
 # setcap "cap_net_admin,cap_net_raw+eip" $(which arp-scan)
 
-import sys
-import subprocess
-import time
-
-
 ###########config########################################
 global config                                           #
 class config:                                           #
@@ -31,6 +26,10 @@ class config:                                           #
     # arp-scan program to check arp lookups.            #
     active_scan    = False                              #
 ###########end config####################################
+
+import sys
+import subprocess
+import time
 
 address_list   = sys.argv[1:]
 global progname
