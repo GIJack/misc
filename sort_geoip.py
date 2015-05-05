@@ -25,7 +25,8 @@ for line in fileLines:
     #try:
     try:
         addr = dns.reversename.from_address( line[0] )
-        DNSdict[line[0]] = addr.to_text()
+        if "in-addr.arpa" not in addr.to_text():
+            DNSdict[line[0]] = addr.to_text()
     except:
         continue
 
@@ -61,4 +62,4 @@ for line in filterLines:
     print(output)
     
 print("----------")
-print("Total IPs: " + str(len(filterLines)) )
+print("Total IPs: " + str( len(filterLines) ) )
