@@ -20,10 +20,10 @@ for line in fileLines:
         continue
 
 #now output
-print("IP Address" + "\t".expandtabs(16) + "Location")
-
+print("IP Address" + "\t".expandtabs(15) + "Location")
+print("---------------------------------------------")
 for line in filterLines:
-    output = line[0] + "\t".expandtabs(16 - len(line[0]))
+    output = line[0] + "\t".expandtabs(24 - len(line[0]))
     if line[1] == "US":
         if "N/A" not in line[3]:
             output +=        line[3]
