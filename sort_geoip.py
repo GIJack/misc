@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import dns.reversename
+import socket
 
 #read the file
 inFile    = open("traces.geoip","r")
@@ -24,9 +24,8 @@ for line in fileLines:
     #now try DNS lookups:
     #try:
     try:
-        addr = dns.reversename.from_address( line[0] )
-        if "in-addr.arpa" not in addr.to_text():
-            DNSdict[line[0]] = addr.to_text()
+        addr = socket.gethostbyaddr(line[0])
+        DNSdict[line[0]] = addr[0]
     except:
         continue
 
