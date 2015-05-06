@@ -22,14 +22,16 @@ for line in fileLines:
     except:
         continue
     #now try DNS lookups:
-    #try:
     try:
         addr = socket.gethostbyaddr(line[0])
         DNSdict[line[0]] = addr[0]
     except:
         continue
 
+#sort by state
 filterLines = sorted(filterLines, key=lambda filterLines: filterLines[2])
+#sort by country
+filterLines = sorted(filterLines, key=lambda filterLines: filterLines[1])
 
 #now output
 print("IP Address" + "\t".expandtabs(6) + "Hostname" + "\t".expandtabs(25) + "Location")
