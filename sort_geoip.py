@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# sort abritrary geoip output into usable output
+# sort abritrary geoip output into usable output. Dirty nasty procedural hack.
+# perhaps one day I'll clean this up into functions
 # FreeBSD licensed
 
 import socket
@@ -31,7 +32,7 @@ for line in fileLines:
         continue
 
 #sort by city
-filterLines = sorted(filterLines, key=lambda filterLines: filterLines[2])
+filterLines = sorted(filterLines, key=lambda filterLines: filterLines[3])
 #sort by state
 filterLines = sorted(filterLines, key=lambda filterLines: filterLines[2])
 #sort by country
