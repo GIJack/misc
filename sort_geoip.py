@@ -29,6 +29,8 @@ for line in fileLines:
     except:
         continue
 
+filterLines = sorted(filterLines, key=lambda filterLines: filterLines[2])
+
 #now output
 print("IP Address" + "\t".expandtabs(6) + "Hostname" + "\t".expandtabs(25) + "Location")
 print("-------------------------------------------------------------------------------")
@@ -47,16 +49,20 @@ for line in filterLines:
 
     #third we print whatever location information is available.
     if line[1] == "US":
+        #city
         if "N/A" not in line[3]:
             output +=        line[3]
+        #state
         if "N/A" not in line[2]:
             output += ", " + line[2]
+        #zipcode
         if "N/A" not in line[4] :
             output += " "  + line[4]
     else:
+        #line[3] is city.
         if "N/A" not in line[3]:
             output += line[3]
-
+    #line[1] is country
     output += ", " + line[1]
     print(output)
     
