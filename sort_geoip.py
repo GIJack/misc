@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# sort abritrary geoip output into usable output
+# FreeBSD licensed
 
 import socket
 
@@ -28,13 +30,15 @@ for line in fileLines:
     except:
         continue
 
+#sort by city
+filterLines = sorted(filterLines, key=lambda filterLines: filterLines[2])
 #sort by state
 filterLines = sorted(filterLines, key=lambda filterLines: filterLines[2])
 #sort by country
 filterLines = sorted(filterLines, key=lambda filterLines: filterLines[1])
 
 #now output
-print("IP Address" + "\t".expandtabs(6) + "Hostname" + "\t".expandtabs(25) + "Location")
+print("IP Address" + "\t".expandtabs(6) + "Hostname" + "\t".expandtabs(33) + "Location")
 print("-------------------------------------------------------------------------------")
 for line in filterLines:
     #start with the IP address and a tab
@@ -47,7 +51,7 @@ for line in filterLines:
     else:
         output += "unresolved"
         dnslen = 10
-    output += "\t".expandtabs(32 - dnslen)
+    output += "\t".expandtabs(40 - dnslen)
 
     #third we print whatever location information is available.
     if line[1] == "US":
