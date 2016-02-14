@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-# ToxDNS lookup script, requires python3, and python-dns(http://www.dnspython.org/)
+# ToxDNS lookup script, requires python3, and python-dns(
+# http://www.dnspython.org/)
 # Use as tox_dig user@example.com
 # Written by GI_Jack <iamjacksemail@hackermail.com>
-# Licensed under the GPLv3 or any later version https://www.gnu.org/copyleft/gpl.html
-# Except the TOX development team, which is explicitly and exclusively given the "WTFPL – Do What the Fuck You Want to Public License" http://www.wtfpl.net/
+# Licensed under the GPLv3 or any later version
+# https://www.gnu.org/copyleft/gpl.html
+# Except the TOX development team, which is explicitly and exclusively given the
+# "WTFPL – Do What the Fuck You Want to Public License" http://www.wtfpl.net/
 
 #exits 0 for success, 1 for error, 2 for help
 
@@ -24,7 +27,8 @@ def get_ToxID(address):
     except:
         return(-1,"python dns gave a non-specific failure")
     rawdata = rawdata.strip('"')
-    #splitting the dns return into segments, version comes first[0], in all versions    
+    # splitting the dns return into segments, version comes first[0], in all
+    # versions    
     toxver = rawdata.split(';')[0]
     if   toxver == "v=tox1":
         outdata = _tox1(rawdata)
@@ -39,7 +43,8 @@ def get_ToxID(address):
 
 def _tox1(record):
     '''Lookup a ToxDNS version1 Record '''
-    #ToxID is the second entry on version one records, it should be identified by id=
+    # ToxID is the second entry on version one records, it should be identified
+    # by id=
     try:
         toxid = record.split(';')[1]
     except:
@@ -82,7 +87,9 @@ def main():
 
     output = get_ToxID(address)
 
-    #If there is an error from the function it will return a tupple with the first element[0] being -1 and the second element [1] being the error message
+    # If there is an error from the function it will return a tupple with the
+    # first element[0] being -1 and the second element [1] being the error
+    # message
     if output[0] == -1:
         print("tox_dig: Error",output[1])
         sys.exit(1)
