@@ -5,6 +5,12 @@
 
 # GI_Jack. License: GPLv3 https://www.gnu.org/licenses/gpl-3.0.html
 
+trap_escape() {
+    echo "fuck this, get some work done"
+    exit
+}
+trap "trap_escape" SIGTERM SIGINT
+
 # Blank the LEDs, and test them three times
 setleds -num -caps -scroll
 for i in {1..3};do
