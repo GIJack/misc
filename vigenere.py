@@ -26,7 +26,13 @@ def warn(message):
 
 def decode_vig(key,message):
     '''decode cypher with key. Return decoded text, takes a key and message as str'''
-    message_lenth = 
+    msg_len = len(message)
+    key_len = len(key)
+    # the expand the key to length of the message.
+    use_key = key
+    while len(use_key) < len(message):
+		use_key += key
+
 
 def get_cmd_line_args():
 	'''feed command line arguments through argparse '''
@@ -35,9 +41,9 @@ def get_cmd_line_args():
     parser.add_argument("message",nargs='+',help="The Encoded Message")
     parser.add_argument("-?", "--help",  help="Show This Help Message", action="help")
     method = parser.add_mutually_exclusive_group()
-    method.add_argument("-f", "-keyfile",help="Try all keys in specified text file. Use one key per line",type=str)
-    method.add_argument("-k", "--key",   help="Decrypt the message with specified key",type=str)
-    method.add_argument("-b", "--brute", help="Attempt to bruteforce the key",action="store_true")
+    method.add_argument("-f", "--keyfile",help="Try all keys in specified text file. Use one key per line",type=str)
+    method.add_argument("-k", "--key",    help="Decrypt the message with specified key",type=str)
+    method.add_argument("-b", "--brute",  help="Attempt to bruteforce the key",action="store_true")
     return parser
 
 def main():
