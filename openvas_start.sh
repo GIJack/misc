@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Start OpenVAS stack, while making sure pre-reqs are started
 # -Jack
 
