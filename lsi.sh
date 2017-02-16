@@ -10,7 +10,7 @@
 # description: MegaCLI script to configure and monitor LSI raid cards.
 
 # Full path to the MegaRaid CLI binary
-MegaCli="/opt/MegaRAID/MegaCli/MegaCli64"
+MegaCli="/usr/local/sbin/MegaCli64"
 
 # The identifying number of the enclosure.
 # Use MegaCli64 -PDlist -a0 | grep "Enclosure Device" or ./lsi.sh enclosures 
@@ -43,7 +43,7 @@ enclosures	= list the enclosures
 driveinfo \$N	= info on a specific drive
 createarray	= create an array: lsi.sh createarray <type> <drives>
 secureerase \$N	= securely erase a disk
-expand		= expand all arrays to fit new disks
+expand		= expand capacitiy of array(s)
 
 EOF
 exit 1
@@ -300,6 +300,8 @@ cmd_driveinfo(){
    errors+=$?
    $MegaCli -PDInfo -PhysDrv [${ENCLOSURE}:${drive}] -aALL | grep -A5 "Raw Size:"
    errors+=$?
+   $MegaCli -PDInfo -PhysDrv [${ENCLOSURE}:${drive}] -aALL | grep "Inquiry Data:"
+   errors+=$?
    return $errors
 }
 
@@ -321,7 +323,7 @@ cmd_createarray(){
 # cmd_secureerase <disk#>
 cmd_secureerase(){
   local disk=${1}
-  ${MegaCli} -SecureErase Start Normal [${ENCLOSURE}:${disk}] -a0
+  ${MegaCli} -SecureErase Start Standard [${ENCLOSURE}:${disk}] -a0
 }
 
 # migrate to larger disk sizes
@@ -348,4 +350,3 @@ main(){
 main ${@}
 
 ### EOF ###
-
