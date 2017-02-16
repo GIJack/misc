@@ -190,7 +190,7 @@ cmd_checknemail(){
     # Check if raid is in good condition
     local drives_status=""
     local gen_status=$(cmd_status)
-    STATUS=$(cmd_status | egrep -i 'fail|degrad|error') || 
+    STATUS=$($MegaCli -LDInfo -Lall -aALL -NoLog | egrep -i 'fail|degrad|error') || 
        logger $("$HOSTNAME cannot get RAID card status";message "Cannot get RAID card status")
 
     # On bad raid status send email with basic drive information
