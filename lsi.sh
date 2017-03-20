@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script Overhauled and extended by Jack @ ISPrime
+# Script Overhauled and extended by GI_Jack
 #
 # Calomel.org 
 #     https://calomel.org/megacli_lsi_commands.html
@@ -31,7 +31,7 @@ good \$slot	= Simply makes the slot "Unconfigured(good)" (need slot number)
 replace \$slot	= Replace "Unconfigured(bad)" drive (need slot number)
 progress	= Status of drive rebuild
 errors		= Show drive errors which are non-zero
-bat		= Battery health and capacity"
+bat		= Battery health and capacity
 batrelearn	= Force BBU re-learn cycle
 logs		= Print card logs
 checkNemail	= Check volume(s) and send email on raid errors
@@ -286,7 +286,7 @@ cmd_setdefaults(){
     return $errors
 }
 
-### commands added by Jack @ ISPrime ###
+### commands added by GI_Jack ###
 cmd_enclosures(){
    message "Enclosures Available:"
    $MegaCli -PDlist -a0|grep -A4 "Enclosure Device ID"
