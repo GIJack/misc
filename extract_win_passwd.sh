@@ -27,8 +27,12 @@ help_and_exit(){
   cat 1>&2 << EOF
 extract_win_passwd.sh:
 
-This script dumps Windows passwords from selected disk partition. This script
-does automatic selection of disks. needs either root access or sudo.
+This script dumps Windows passwords from selected disk partition. Takes no
+parameters, but opens a dialog menu to ask for disk partions to use.
+
+Results are written one file per parition and tar gz'd into win_passwds.tar.gz
+
+needs to be either run as root, or have a working sudo
 
 EOF
   exit 2
@@ -50,9 +54,9 @@ exit_with_error(){
 check_sudo(){
   # Check if this script can run sudo correctly.
   local -i success
-  sudo echo "" *> /dev/null
-  success=$?
-  if [ ${success} -eq 0 ];then
+  local sudouser=""
+  sudouser=$( sudo whoami )
+  if [ ${sudouser} == "root" ];then
     echo true
    else
     echo false
@@ -97,6 +101,18 @@ check_deps(){
       exit_with_error 4 "$dep is not in \$PATH! This is needed to run. Quitting"
     fi
   done
+}
+
+Welcome_Banner(){
+  local welcome_msg="
+This script targets invidual disk partitions looking for Windows password files.
+In the next screen you will be asked to select windows disk partitions.
+
+Results will be written to files and compressed into win_passwords.tar.gz in
+current direction
+
+"
+  dialog --backtitle "${WIN_TITLE}" --msgbox "${welcome_msg}" 10 50
 }
 
 ask_user_parts(){
