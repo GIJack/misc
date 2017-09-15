@@ -118,14 +118,14 @@ dialog --backtitle "${WIN_TITLE}" --visit-items --buildlist "Select Disk Paritio
 ${part_list}
 
 EOF
-  SELECT_PARTS=$( bash ${tempfile} 2>&1 )
+  bash ${tempfile} 2>&1
   rm ${tempfile}
 }
 
 extract_pw_hash(){
   # This function extracts password hashes from selected hard disks
   local tmpdir=$(mktemp -d)
-  local parts="${@}"
+  local parts="${SELECT_PARTS}"
   local mountpoint=""
   local mounted=""
   local samfile=""
@@ -185,8 +185,8 @@ main(){
   [ ${can_sudo} != "true" ] && ROOT_METHOD="UID"
   message "Looking for presence of windows password files"
   enum_disk_parts
-  ask_user_parts
-  extract_pw_hash "${SELECT_PARTS}"
+  SELECT_PARTS=$(ask_user_parts)
+  extract_pw_hash
 }
 
 main "$@"
