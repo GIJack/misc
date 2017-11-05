@@ -5,7 +5,6 @@
 
 # GPLv3 - GI_Jack
 
-
 #Name and location of windows password files. Should not need to change this
 ### CONFIG ###
 SAM_FILE="sam"
@@ -19,9 +18,7 @@ WIN_TITLE="EXTRACT WINDOWS PASSWORD"
 DISK_PARTS=""
 SELECT_PARTS=""
 NT_PARTS=""
-#This associative array matches disk partitions with filesystem types.
 declare -A PART_FSTYPE
-#This Array lists a description of the device. Size, Label
 declare -A PART_DESC
 
 help_and_exit(){
