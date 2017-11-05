@@ -60,37 +60,36 @@ warn(){
 }
 
 cmd_status(){
-    # General status of all RAID virtual disks or volumes and if PATROL disk
-    # check is running.
-    local -i errors=0
-    $MegaCli -LDInfo -Lall -aALL -NoLog
-    errors+=$?
-    echo "###############################################"
-    $MegaCli -AdpPR -Info -aALL -NoLog
-    errors+=$?
-    echo "###############################################"
-    $MegaCli -LDCC -ShowProg -LALL -aALL -NoLog
-    errors+=$?
-    return $errors
+  # General status of all RAID virtual disks or volumes and if PATROL disk
+  # check is running.
+  local -i errors=0
+  $MegaCli -LDInfo -Lall -aALL -NoLog
+  errors+=$?
+  echo "###############################################"
+  $MegaCli -AdpPR -Info -aALL -NoLog
+  errors+=$?
+  echo "###############################################"
+  $MegaCli -LDCC -ShowProg -LALL -aALL -NoLog
+  errors+=$?
+  return $errors
 }
 
-
 cmd_drives(){
-    # Shows the state of all drives and if they are online, unconfigured or
-    # missing.
-    $MegaCli -PDlist -aALL -NoLog | egrep 'Slot|state' | awk '/Slot/{if (x)print x;x="";}{x=(!x)?$0:x" -"$0;}END{print x;}' | sed 's/Firmware state://g'
+  # Shows the state of all drives and if they are online, unconfigured or
+  # missing.
+  $MegaCli -PDlist -aALL -NoLog | egrep 'Slot|state' | awk '/Slot/{if (x)print x;x="";}{x=(!x)?$0:x" -"$0;}END{print x;}' | sed 's/Firmware state://g'
 }
 
 cmd_ident() {
-    # Use to blink the light on the slot in question. Hit enter again to turn
-    # the blinking light off.
-    $MegaCli  -PdLocate -start -physdrv[$ENCLOSURE:${1}] -a0 -NoLog || \
-      warn "blinking light returns error code"
-    logger "${HOSTNAME} - identifying enclosure $ENCLOSURE, drive ${1}"
-    message "identifying enclosure $ENCLOSURE, drive ${1}"
-    read -p "Press [Enter] key to turn off light..."
-    $MegaCli  -PdLocate -stop -physdrv[$ENCLOSURE:${1}] -a0 -NoLog || \
-      warn "blinking light returns error code"
+  # Use to blink the light on the slot in question. Hit enter again to turn
+  # the blinking light off.
+  $MegaCli  -PdLocate -start -physdrv[$ENCLOSURE:${1}] -a0 -NoLog || \
+   warn "blinking light returns error code"
+  logger "${HOSTNAME} - identifying enclosure $ENCLOSURE, drive ${1}"
+  message "identifying enclosure $ENCLOSURE, drive ${1}"
+  read -p "Press [Enter] key to turn off light..."
+  $MegaCli  -PdLocate -stop -physdrv[$ENCLOSURE:${1}] -a0 -NoLog || \
+   warn "blinking light returns error code"
 }
 
 # When a new drive is inserted it might have old RAID headers on it. This
@@ -99,14 +98,14 @@ cmd_ident() {
 # this method on our FreeBSD ZFS machines before the drive is added back into
 # the zfs pool.0
 cmd_good(){
-    local -i errors=0
-    # set Unconfigured(bad) to Unconfigured(good)
-    $MegaCli -PDMakeGood -PhysDrv[$ENCLOSURE:$2] -a0 -NoLog
-    errors+=$?
-    # clear 'Foreign' flag or invalid raid header on replacement drive
-    $MegaCli -CfgForeign -Clear -aALL -NoLog
-    errors+=$?
-    return $errors
+  local -i errors=0
+  # set Unconfigured(bad) to Unconfigured(good)
+  $MegaCli -PDMakeGood -PhysDrv[$ENCLOSURE:$2] -a0 -NoLog
+  errors+=$?
+  # clear 'Foreign' flag or invalid raid header on replacement drive
+  $MegaCli -CfgForeign -Clear -aALL -NoLog
+  errors+=$?
+  return $errors
 }
 
 # Use to diagnose bad drives. When no errors are shown only the slot numbers
@@ -115,14 +114,14 @@ cmd_good(){
 # drive. Bad drives might not fail right away and will slow down your raid with
 # read/write retries or corrupt data. 
 cmd_errors(){
-    echo "Slot Number: 0"; $MegaCli -PDlist -aALL -NoLog | egrep -i 'error|fail|slot' | egrep -v ' 0'
+  echo "Slot Number: 0"; $MegaCli -PDlist -aALL -NoLog | egrep -i 'error|fail|slot' | egrep -v ' 0'
 }
 
 # status of the battery and the amount of charge. Without a working Battery
 # Backup Unit (BBU) most of the LSI read/write caching will be disabled
 # automatically. You want caching for speed so make sure the battery is ok.
 cmd_bat(){
-    $MegaCli -AdpBbuCmd -aAll -NoLog
+  $MegaCli -AdpBbuCmd -aAll -NoLog
 }
 
 # Force a Battery Backup Unit (BBU) re-learn cycle. This will discharge the
@@ -137,7 +136,7 @@ cmd_bat(){
 # and restart it. This will force the LSI card to re-evaluate the BBU. Silly
 # but it works.
 cmd_batrelearn(){
-    $MegaCli -AdpBbuCmd -BbuLearn -aALL -NoLog
+  $MegaCli -AdpBbuCmd -BbuLearn -aALL -NoLog
 }
 
 # Use to replace a drive. You need the slot number and may want to use the
@@ -150,27 +149,27 @@ cmd_batrelearn(){
 # by mistake the LSI raid card is smart enough to just error out and _NOT_
 # destroy the raid drive, thankfully.
 cmd_replace(){
-    local -i errors=0
-    logger "${HOSTNAME} - REPLACE enclosure $ENCLOSURE, drive ${1}"
-    message "REPLACE enclosure $ENCLOSURE, drive ${1}"
-    # set Unconfigured(bad) to Unconfigured(good)
-    $MegaCli -PDMakeGood -PhysDrv[$ENCLOSURE:${1}] -a0 -NoLog
-    errors+=$?
-    # clear 'Foreign' flag or invalid raid header on replacement drive
-    $MegaCli -CfgForeign -Clear -aALL -NoLog
-    errors+=$?
-    # set drive as hot spare
-    $MegaCli -PDHSP -Set -PhysDrv [$ENCLOSURE:${1}] -a0 -NoLog
-    errors+=$?
-    # show rebuild progress on replacement drive just to make sure it starts
-    $MegaCli -PDRbld -ShowProg -PhysDrv [$ENCLOSURE:${1}] -a0 -NoLog
-    errors+=$?
-    return $errors
+  local -i errors=0
+  logger "${HOSTNAME} - REPLACE enclosure $ENCLOSURE, drive ${1}"
+  message "REPLACE enclosure $ENCLOSURE, drive ${1}"
+  # set Unconfigured(bad) to Unconfigured(good)
+  $MegaCli -PDMakeGood -PhysDrv[$ENCLOSURE:${1}] -a0 -NoLog
+  errors+=$?
+  # clear 'Foreign' flag or invalid raid header on replacement drive
+  $MegaCli -CfgForeign -Clear -aALL -NoLog
+  errors+=$?
+  # set drive as hot spare
+  $MegaCli -PDHSP -Set -PhysDrv [$ENCLOSURE:${1}] -a0 -NoLog
+  errors+=$?
+  # show rebuild progress on replacement drive just to make sure it starts
+  $MegaCli -PDRbld -ShowProg -PhysDrv [$ENCLOSURE:${1}] -a0 -NoLog
+  errors+=$?
+  return $errors
 }
 
 # Print all the logs from the LSI raid card. You can grep on the output.
 cmd_logs(){
-    $MegaCli -FwTermLog -Dsply -aALL -NoLog
+  $MegaCli -FwTermLog -Dsply -aALL -NoLog
 }
 
 # Use to query the RAID card and find the drive which is rebuilding. The script
@@ -178,8 +177,8 @@ cmd_logs(){
 # how much time it has taken so far. You can then guess-ti-mate the
 # completion time.
 cmd_progress(){
-    DRIVE=$($MegaCli -PDlist -aALL -NoLog | egrep 'Slot|state' | awk '/Slot/{if (x)print x;x="";}{x=(!x)?$0:x" -"$0;}END{print x;}' | sed 's/Firmware state://g' | egrep build | awk '{print $3}')
-    $MegaCli -PDRbld -ShowProg -PhysDrv [$ENCLOSURE:$DRIVE] -a0 -NoLog
+  DRIVE=$($MegaCli -PDlist -aALL -NoLog | egrep 'Slot|state' | awk '/Slot/{if (x)print x;x="";}{x=(!x)?$0:x" -"$0;}END{print x;}' | sed 's/Firmware state://g' | egrep build | awk '{print $3}')
+  $MegaCli -PDRbld -ShowProg -PhysDrv [$ENCLOSURE:$DRIVE] -a0 -NoLog
 }
 
 # Use to check the status of the raid. If the raid is degraded or faulty the
@@ -187,16 +186,16 @@ cmd_progress(){
 # this method to a cron job to be run every few hours so we are notified of any
 # issues.
 cmd_checknemail(){
-    # Check if raid is in good condition
-    local drives_status=""
-    local gen_status=$(cmd_status)
-    STATUS=$($MegaCli -LDInfo -Lall -aALL -NoLog | egrep -i 'fail|degrad|error') || 
-       logger $("$HOSTNAME cannot get RAID card status";message "Cannot get RAID card status")
+  # Check if raid is in good condition
+  local drives_status=""
+  local gen_status=$(cmd_status)
+  STATUS=$($MegaCli -LDInfo -Lall -aALL -NoLog | egrep -i 'fail|degrad|error') || 
+   logger $("$HOSTNAME cannot get RAID card status";message "Cannot get RAID card status")
 
-    # On bad raid status send email with basic drive information
-    if [ "$STATUS" ]; then
-       drives_status=$($MegaCli -PDlist -aALL -NoLog | egrep 'Slot|state' | awk '/Slot/{if (x)print x;x="";}{x=(!x)?$0:x" -"$0;}END{print x;}' | sed 's/Firmware state://g')
-       echo $message_body | mail -s "${HOSTNAME} - RAID Notification" $EMAIL << EOF
+  # On bad raid status send email with basic drive information
+  if [ "$STATUS" ]; then
+    drives_status=$($MegaCli -PDlist -aALL -NoLog | egrep 'Slot|state' | awk '/Slot/{if (x)print x;x="";}{x=(!x)?$0:x" -"$0;}END{print x;}' | sed 's/Firmware state://g')
+    echo $message_body | mail -s "${HOSTNAME} - RAID Notification" $EMAIL << EOF
 
 Array Status
 ------------
@@ -206,7 +205,7 @@ Drives
 ------
 $drives_status
 EOF
-    fi
+  fi
 }
 
 # Use to print all information about the LSI raid card. Check default options,
@@ -214,21 +213,21 @@ EOF
 # cache memory and the capabilities of the adapter. Pipe to grep to find the
 # term you need.
 cmd_allinfo(){
-    $MegaCli -AdpAllInfo -aAll -NoLog
+  $MegaCli -AdpAllInfo -aAll -NoLog
 }
 
 # Update the LSI card's time with the current operating system time. You may
 # want to setup a cron job to call this method once a day or whenever you
 # think the raid card's time might drift too much. 
 cmd_setting(){
-    local -i errors=0
-    $MegaCli -AdpGetTime -aALL -NoLog
-    errors+=$?
-    $MegaCli -AdpSetTime $(date +%Y%m%d) $(date +%H:%M:%S) -aALL -NoLog
-    errors+=$?
-    $MegaCli -AdpGetTime -aALL -NoLog
-    errors+=$?
-    return $errors
+  local -i errors=0
+  $MegaCli -AdpGetTime -aALL -NoLog
+  errors+=$?
+  $MegaCli -AdpSetTime $(date +%Y%m%d) $(date +%H:%M:%S) -aALL -NoLog
+  errors+=$?
+  $MegaCli -AdpGetTime -aALL -NoLog
+  errors+=$?
+  return $errors
 }
 
 # These are the defaults we like to use on the hundreds of raids we manage. You
@@ -237,59 +236,59 @@ cmd_setting(){
 # options. When setting up a new machine we simply execute the "setdefaults"
 # method and the raid is configured. You can use this on live raids too.
 cmd_setdefaults(){
-    local -i errors=0
-    # Read Cache enabled specifies that all reads are buffered in cache memory. 
-    $MegaCli -LDSetProp -Cached -LAll -aAll -NoLog
-    errors+=$?
-    # Adaptive Read-Ahead if the controller receives several requests to sequential sectors
-    $MegaCli -LDSetProp ADRA -LALL -aALL -NoLog
-    errors+=$?
-    # Hard Disk cache policy enabled allowing the drive to use internal caching too
-    $MegaCli -LDSetProp EnDskCache -LAll -aAll -NoLog
-    errors+=$?
-    # Write-Back cache enabled
-    $MegaCli -LDSetProp WB -LALL -aALL -NoLog
-    errors+=$?
-    # Continue booting with data stuck in cache. Set Boot with Pinned Cache Enabled.
-    $MegaCli -AdpSetProp -BootWithPinnedCache -1 -aALL -NoLog
-    errors+=$?
-    # PATROL run every 672 hours or monthly (RAID6 77TB @60% rebuild takes 21 hours)
-    $MegaCli -AdpPR -SetDelay 672 -aALL -NoLog
-    errors+=$?
-    # Check Consistency every 672 hours or monthly
-    $MegaCli -AdpCcSched -SetDelay 672 -aALL -NoLog
-    errors+=$?
-    # Enable autobuild when a new Unconfigured(good) drive is inserted or set to hot spare
-    $MegaCli -AdpAutoRbld -Enbl -a0 -NoLog
-    errors+=$?
-    # RAID rebuild rate to 60% (build quick before another failure)
-    $MegaCli -AdpSetProp \{RebuildRate -60\} -aALL -NoLog
-    errors+=$?
-    # RAID check consistency rate to 60% (fast parity checks)
-    $MegaCli -AdpSetProp \{CCRate -60\} -aALL -NoLog
-    errors+=$?
-    # Enable Native Command Queue (NCQ) on all drives
-    $MegaCli -AdpSetProp NCQEnbl -aAll -NoLog
-    errors+=$?
-    # Sound alarm disabled (server room is too loud anyways)
-    $MegaCli -AdpSetProp AlarmDsbl -aALL -NoLog
-    errors+=$?
-    # Use write-back cache mode even if BBU is bad. Make sure your machine is on UPS too.
-    $MegaCli -LDSetProp CachedBadBBU -LAll -aAll -NoLog
-    errors+=$?
-    # Disable auto learn BBU check which can severely affect raid speeds
-    OUTBBU=$(mktemp /tmp/output.XXXXXXXXXX)
-    echo "autoLearnMode=1" > $OUTBBU
-    $MegaCli -AdpBbuCmd -SetBbuProperties -f $OUTBBU -a0 -NoLog
-    errors+=$?
-    rm -rf $OUTBBU
-    return $errors
+  local -i errors=0
+  # Read Cache enabled specifies that all reads are buffered in cache memory. 
+  $MegaCli -LDSetProp -Cached -LAll -aAll -NoLog
+  errors+=$?
+  # Adaptive Read-Ahead if the controller receives several requests to sequential sectors
+  $MegaCli -LDSetProp ADRA -LALL -aALL -NoLog
+  errors+=$?
+  # Hard Disk cache policy enabled allowing the drive to use internal caching too
+  $MegaCli -LDSetProp EnDskCache -LAll -aAll -NoLog
+  errors+=$?
+  # Write-Back cache enabled
+  $MegaCli -LDSetProp WB -LALL -aALL -NoLog
+  errors+=$?
+  # Continue booting with data stuck in cache. Set Boot with Pinned Cache Enabled.
+  $MegaCli -AdpSetProp -BootWithPinnedCache -1 -aALL -NoLog
+  errors+=$?
+  # PATROL run every 672 hours or monthly (RAID6 77TB @60% rebuild takes 21 hours)
+  $MegaCli -AdpPR -SetDelay 672 -aALL -NoLog
+  errors+=$?
+  # Check Consistency every 672 hours or monthly
+  $MegaCli -AdpCcSched -SetDelay 672 -aALL -NoLog
+  errors+=$?
+  # Enable autobuild when a new Unconfigured(good) drive is inserted or set to hot spare
+  $MegaCli -AdpAutoRbld -Enbl -a0 -NoLog
+  errors+=$?
+  # RAID rebuild rate to 60% (build quick before another failure)
+  $MegaCli -AdpSetProp \{RebuildRate -60\} -aALL -NoLog
+  errors+=$?
+  # RAID check consistency rate to 60% (fast parity checks)
+  $MegaCli -AdpSetProp \{CCRate -60\} -aALL -NoLog
+  errors+=$?
+  # Enable Native Command Queue (NCQ) on all drives
+  $MegaCli -AdpSetProp NCQEnbl -aAll -NoLog
+  errors+=$?
+  # Sound alarm disabled (server room is too loud anyways)
+  $MegaCli -AdpSetProp AlarmDsbl -aALL -NoLog
+  errors+=$?
+  # Use write-back cache mode even if BBU is bad. Make sure your machine is on UPS too.
+  $MegaCli -LDSetProp CachedBadBBU -LAll -aAll -NoLog
+  errors+=$?
+  # Disable auto learn BBU check which can severely affect raid speeds
+  OUTBBU=$(mktemp /tmp/output.XXXXXXXXXX)
+  echo "autoLearnMode=1" > $OUTBBU
+  $MegaCli -AdpBbuCmd -SetBbuProperties -f $OUTBBU -a0 -NoLog
+  errors+=$?
+  rm -rf $OUTBBU
+  return $errors
 }
 
 ### commands added by GI_Jack ###
 cmd_enclosures(){
-   message "Enclosures Available:"
-   $MegaCli -PDlist -a0|grep -A4 "Enclosure Device ID"
+  message "Enclosures Available:"
+  $MegaCli -PDlist -a0|grep -A4 "Enclosure Device ID"
 }
 
 # Print information on a specific drive
@@ -338,13 +337,13 @@ main(){
   COMMAND=${COMMAND,,}
   shift
   case ${COMMAND} in
-    help|--help)
-      help_and_exit
-      ;;
-    *)
-      #[[ *${COMMAND}* != ${COMMANDLIST[@]} ]] && exit_with_error 1 "No such command $COMMAND, see help"
-      cmd_${COMMAND} "${@}" || exit_with_error $? "${COMMAND} failed, exit status(${?})"
-      ;;
+   help|--help)
+     help_and_exit
+     ;;
+   *)
+     #[[ *${COMMAND}* != ${COMMANDLIST[@]} ]] && exit_with_error 1 "No such command $COMMAND, see help"
+     cmd_${COMMAND} "${@}" || exit_with_error $? "${COMMAND} failed, exit status(${?})"
+     ;;
   esac
 }
 main ${@}
