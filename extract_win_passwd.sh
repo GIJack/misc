@@ -7,17 +7,18 @@
 
 
 #Name and location of windows password files. Should not need to change this
+### CONFIG ###
 SAM_FILE="sam"
 SYSTEM_FILE="SYSTEM"
 WIN_PASSWD_DIR="/WINDOWS/system32/config/"
+ROOT_METHOD="sudo"
+### /CONFIG ###
 
 DEP_LIST="dialog samdump2"
 WIN_TITLE="EXTRACT WINDOWS PASSWORD"
 DISK_PARTS=""
 SELECT_PARTS=""
 NT_PARTS=""
-ROOT_METHOD="sudo"
-
 #This associative array matches disk partitions with filesystem types.
 declare -A PART_FSTYPE
 #This Array lists a description of the device. Size, Label
