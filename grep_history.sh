@@ -5,7 +5,7 @@
 
 # GI_Jack - GPLv3
 
-HISTORY='.bash_history'
+HISTORY=".bash_history"
 PASSWD="/etc/passwd"
 
 help_and_exit(){
