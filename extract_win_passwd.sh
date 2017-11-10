@@ -101,7 +101,7 @@ check_deps(){
   done
 }
 
-Welcome_Banner(){
+welcome_banner(){
   local welcome_msg="
 This script targets invidual disk partitions looking for Windows password files.
 In the next screen you will be asked to select windows disk partitions.

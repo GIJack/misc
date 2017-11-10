@@ -1,7 +1,7 @@
 #!/usr/bin/python
 '''
   This script is for decoding vigenere ciphers. Inspired by Mr Robot
-  TriBeCa challenge from 2016.
+  TriBeCa challenge 2016.
   
   https://en.wikipedia.org/wiki/Vigenere_cipher
 
@@ -17,6 +17,9 @@ ignore_chars = [""]
 def message(message):
 	print("vigenere.py:", message)
 
+def submsg(message):
+	print("\t",message)
+
 def exit_with_error(code,message):
     print("vigenre.py: ERROR:",message, file=sys.stderr)
     sys.exit(code)
@@ -31,23 +34,25 @@ def decode_vig(key,message):
     # the expand the key to length of the message.
     use_key = key
     while len(use_key) < len(message):
-		use_key += key
+	    use_key += key
 
 
 def get_cmd_line_args():
-	'''feed command line arguments through argparse '''
-    parser = argparse.ArgumentParser(description='''Decode and bruteforce vigenere cipher'd text
-    vigenere cipher:https://en.wikipedia.org/wiki/Vigenere_cipher ''',add_help=False)
-    parser.add_argument("message",nargs='+',help="The Encoded Message")
+    '''feed command line arguments through argparse '''
+    parser = argparse.ArgumentParser(description='''Decode or bruteforce vigenere cipher'd text. \n
+    Vigenere cipher: https://en.wikipedia.org/wiki/Vigenere_cipher '''
+    ,add_help=False)
+    parser.add_argument("message",help="The Encoded Message",type=str)
     parser.add_argument("-?", "--help",  help="Show This Help Message", action="help")
-    method = parser.add_mutually_exclusive_group()
+    method = parser.add_mutually_exclusive_group(required=True)
     method.add_argument("-f", "--keyfile",help="Try all keys in specified text file. Use one key per line",type=str)
     method.add_argument("-k", "--key",    help="Decrypt the message with specified key",type=str)
     method.add_argument("-b", "--brute",  help="Attempt to bruteforce the key",action="store_true")
-    return parser
+    return parser.parse_args()
 
 def main():
 	cmdline_args = get_cmd_line_args()
+	print(cmdline_args)
 
-if ___name___ == "___main___":
-    main
+if __name__ == "__main__":
+    main()
