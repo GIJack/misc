@@ -1,34 +1,32 @@
 #!/bin/bash
 # This script should be run by cron everyime letsencrypt updates scripts.
 # Does post rotate proccessing. All services should have an appropriate
-# systemd unit.
+# systemd unit. You can specify a pre restart function
 # - GI_Jack GPLv3
 
+### CONFIG ###
 #space seperated list of systemd units
-services="nginx ejabberd"
+SERVICES="nginx ejabberd"
 #Hostname
-hostname="yourletsncryptdomain.sucks"
+HOSTNAME="yourletsncryptdomain.sucks"
+### /CONFIG ###
 
 ### Per Service Functions ###
-## you NEED a service_NAME for every service in services= above. If there is
-## nothing to do, simply put "true" or return.
+## If service_$SERVICENAME is present, it will be executed when the service is
+## rotated
 
 service_ejabberd(){
   # use lets encrypt certs for ejabberd
-  cat /etc/letsencrypt/live/${hostname}/{privkey,fullchain}.pem > /etc/ejabberd/ejabberd.pem
+  cat /etc/letsencrypt/live/${HOSTNAME}/{privkey,fullchain}.pem > /etc/ejabberd/ejabberd.pem
   chown ejabberd:ejabberd /etc/ejabberd/ejabberd.pem
   chmod 640 /etc/ejabberd/ejabberd.pem
 }
 
-service_nginx(){
-  true
-}
-
-### End Per Service Functions ###
+### /Per Service Functions ###
 
 main(){
-  for i in ${services};do
-    service_${i}
+  for service in ${SERVICES};do
+    [ $(type -t service_${i}) == "function" ] && service_${i}
     systemctl restart ${i}
   done
 }
