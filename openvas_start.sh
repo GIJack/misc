@@ -2,6 +2,8 @@
 # Start OpenVAS stack, while making sure pre-reqs are started
 # -Jack
 
+_SERVICES=(redis openvas-scanner openvas-manager gsad)
+
 message() {
   echo "${0}: ${@}"
 }
@@ -10,10 +12,15 @@ exit_with_error() {
   exit ${1}
 }
 
-[ $UID -ne 0 ] && exit_with_error 2 "Not root, run this script as root!"
+main(){
+  [ $UID -ne 0 ] && exit_with_error 2 "Not root, run this script as root!"
+  message "Starting OpenVAS..."
 
-message "Starting OpenVAS..."
-systemctl start redis || exit_with_error 1 "redis failed to start"
-systemctl start openvas-scanner || exit_with_error 1 "scanner failed to start"
-systemctl start openvas-manager || exit_with_error 1 "manager failed to start"
-systemctl start gsad || exit_with_error 1 "GSA web UI failed to start"
+  for item in ${_SERVICES[@]};do
+    systemctl start $item} || exit_with_error 1 "${item} failed to start"
+  done
+
+  message "Done!"
+}
+
+main "${@}"
