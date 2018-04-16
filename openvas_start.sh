@@ -17,7 +17,7 @@ main(){
   message "Starting OpenVAS..."
 
   for item in ${_SERVICES[@]};do
-    systemctl start $item} || exit_with_error 1 "${item} failed to start"
+    systemctl start ${item} || exit_with_error 1 "${item} failed to start"
   done
 
   message "Done!"
