@@ -18,6 +18,8 @@ main(){
 
   for item in ${_SERVICES[@]};do
     systemctl start ${item} || exit_with_error 1 "${item} failed to start"
+    message "started ${item}"
+    sleep 0.5
   done
 
   message "Done!"
