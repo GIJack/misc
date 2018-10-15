@@ -1,4 +1,4 @@
-I am Jack's repository for miscellaneous small scripts and digital doodling.
+Repository for miscellaneous small scripts and digital doodling.
 For projects so small they don't get their own repository. Basic hacks,
 workarounds, examples of my prowess in bash-fu and python.
 
