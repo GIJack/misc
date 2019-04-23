@@ -193,9 +193,15 @@ main(){
   [ "${1}" == "--help" ] && help_and_exit
   check_deps
   local can_sudo=$(check_sudo)
-  if [ ${can_sudo} != "true" -a $UID -ne 0 ];then
+
+  if [ ${UID} -eq 0 ];then
+    ROOT_METHOD="uid"
+   elif [ ${can_sudo} == "true" ];then
+    ROOT_METHOD="sudo"
+   else
     exit_with_error 4 "Cannot gain root! This program needs root to work Exiting..."
   fi
+
   [ ${can_sudo} != "true" ] && ROOT_METHOD="UID"
   message "Looking for presence of windows password files"
   enum_disk_parts
