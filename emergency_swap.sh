@@ -62,7 +62,7 @@ submsg(){
 
 create_swap_file(){
   local -i exit_code=0
-  local -i block_size=1024k # One Megabyte
+  local block_size="1024k" # One Megabyte
   if [ -f "${SWAP_FILE}" ];then
     message "${SWAP_FILE} exits, removing first..."
     ${WIPE_CMD} --remove "${SWAP_FILE}" || \
