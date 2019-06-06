@@ -6,6 +6,8 @@
 # whatever you are doing is gone, you can reset this swap file, by swapoff,
 # overwrite, and re-initalization so its ready for next time.
 
+# Licensed under the GPLv3 https://www.gnu.org/licenses/gpl-3.0.txt
+
 # Swapfile size, in megabytes. Default is 16GB
 SIZE=16384
 
