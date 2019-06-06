@@ -70,7 +70,7 @@ create_swap_file(){
   fi
 
   message "Creating emergency swap"
-  dd if="${FILL_SRC}" of="${SWAP_FILE}" bs=${block_size} count=${SIZE}
+  dd if="${FILL_SRC}" of="${SWAP_FILE}" bs=${block_size} count=${SIZE} status=progress
   exit_code+=${?}
   mkswap ${SWAP_FILE}
   exit_code+=${?}
