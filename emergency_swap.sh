@@ -33,6 +33,7 @@ prevent data leakage. Config on the top of the script
 
 	off	- turn off and reset emergency swap. swapoff, wipe and recreate
 		  swap file
+
 EOF
   exit 2
 }
