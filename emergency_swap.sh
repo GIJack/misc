@@ -74,12 +74,15 @@ create_swap_file(){
   exit_code+=${?}
   mkswap ${SWAP_FILE}
   exit_code+=${?}
+  chmod 0 ${SWAP_FILE}
+  exit_code+=${?}
 
   return ${exit_code}
 }
 
 emergency_swap_on(){
   message "Turning emergency swap on"
+  chmod 0 ${SWAP_FILE} || warn "Could not set permissions on ${SWAP_FILE}"
   swapon ${SWAP_FILE} || exit_with_error 1 "Could not swapon, root?"
 }
 
