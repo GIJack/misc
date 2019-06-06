@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # 
-# Create an emergency swap file that can quickly activatewd
-#
+# This script creates, enables, and resets an emergency swap file. What is an
+# emergency swap file? If you are close to running out of memory, you can enable
+# a previously unused but created swap file to prevent and OOM. Later, when
+# whatever you are doing is gone, you can reset this swap file, by swapoff,
+# overwrite, and re-initalization so its ready for next time.
 
 # Swapfile size, in megabytes. Default is 16GB
 SIZE=16384
