@@ -23,7 +23,7 @@ memory. upon turning off, this script will wipe and reset the swapfile to
 prevent data leakage. Config on the top of the script
 
 	Usage:
-	emergency_swap.sh [create|on|off]
+	emergency_swap.sh [init|on|off]
 
 	commands:
 
