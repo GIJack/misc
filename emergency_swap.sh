@@ -65,6 +65,7 @@ create_swap_file(){
   local block_size="1024k" # One Megabyte
   if [ -f "${SWAP_FILE}" ];then
     message "${SWAP_FILE} exits, removing first..."
+    submsg "Wipe"
     ${WIPE_CMD} --remove "${SWAP_FILE}" || \
       exit_with_error 1 "Cannot Remove stale swap file, exiting!"
   fi
@@ -92,6 +93,7 @@ emergency_swap_off(){
   swapoff ${SWAP_FILE} || exit_with_error 1 "Could not swapoff, root?"
   submsg "Wipe"
   ${WIPE_CMD} "${SWAP_FILE}" || warn "Wipe on ${SWAP_FILE} failed"
+  submsg "Reset"
   mkswap "${SWAP_FILE}" || exit_with_error 1 "Could not recreate swap."
 }
 
