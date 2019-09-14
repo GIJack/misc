@@ -1,0 +1,79 @@
+# IPTables set up to log potential threads
+#
+# This rule set blocks all incomming connections after logging
+
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+### BASE ALLOW RULES ###
+# Allow from loopback, the local interface
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# Allow incomming packets that are part of connections iniated by this computer
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+### /BASE ALLOW RULES ###
+
+### BLOCK CATAGORY DEFINITIONS ###
+
+# Chain for Port Scans
+-N NETSEC_PORTSCAN
+-A NETSEC_PORTSCAN -m limit --limit 6/min -j LOG --log-prefix "NETSEC_PORTSCAN: " --log-level 5
+-A NETSEC_PORTSCAN -j DROP
+
+# Chain for Christmas Tree Packets
+-N NETSEC_XMAS
+-A NETSEC_XMAS -m limit --limit 6/minute -j LOG --log-prefix "NETSEC_XMAS_PACKET: " --log-level 5
+-A NETSEC_XMAS -j DROP
+
+# Chain for Null Packets
+-N NETSEC_NULL
+-A NETSEC_NULL -m limit --limit 6/minute -j LOG --log-prefix "NETSEC_NULL_PACKET: " --log-level 5
+-A NETSEC_NULL -j DROP
+
+# Chain for Fragmented Packets
+-N NETSEC_FRAG
+-A NETSEC_FRAG -m limit --limit 1/second -j LOG --log-prefix "NETSEC_FRAG_PACKET: " --log-level 5
+-A NETSEC_FRAG -j DROP
+
+# Chain for Forwarded packets
+-N NETSEC_FORWARD
+-A NETSEC_FORWARD -m limit --limit 6/minute -j LOG --log-prefix "NETSEC_ROUTED: " --log-level 5
+-A NETSEC_FORWARD -j DROP
+
+# Chain for Pings
+-N NETSEC_PING
+-A NETSEC_PING -m limit --limit 1/second -j LOG --log-prefix "NETSEC_PING: " --log-level 5
+-A NETSEC_PING -j DROP
+
+### /BLOCK CATAGORY DEFINITIONS ###
+
+### BLOCK RULES ###
+
+# Christmas Tree Packets
+-A INPUT -p tcp --tcp-flags ALL FIN,PSH,URG -j NETSEC_XMAS
+
+# Null Packets
+-A INPUT -p tcp --tcp-flags ALL NONE -j NETSEC_NULL
+
+# Port Scans
+#-A INPUT -m tcp -p tcp -m recent --seconds 60 --name TCP-PORTSCAN --set -j NETSEC_PORTSCAN
+#-A INPUT -m udp -p udp -m recent --seconds 60 --name UDP-PORTSCAN --set -j NETSEC_PORTSCAN
+
+# Fragmented packets
+-A INPUT -f -j NETSEC_FRAG
+
+# INCOMMING PINGS
+-A INPUT -p icmp --icmp-type echo-request -j NETSEC_PING
+
+# All packets that attempt to route though this box, log and fail
+-A FORWARD -j NETSEC_FORWARD
+-A INPUT -j DROP
+
+### /BLOCK RULES ###
+
+COMMIT
+
