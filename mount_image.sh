@@ -22,10 +22,14 @@ Commands: mount umount
 EOF
   exit 2
 }
+
 message(){
   echo "mount_image.sh: ${@}"
 }
-
+exit_with_error(){
+  echo 1>&2 "mount_image.sh: ERROR: ${2}"
+  exit ${1}
+}
 
 as_root(){
   # execute a command as root.
