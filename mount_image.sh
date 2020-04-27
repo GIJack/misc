@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-#
-#  See help_and_exit() below
-#
+
 command="${1}"
 filename="${2}"
 loop_dev=loop1
@@ -12,8 +10,7 @@ help_and_exit(){
   cat 1>&2 << EOF
 mount_image.sh:
 
-Script is designed to mount and unmount QEMU single partition disk images for
-manipulation in a chroot.
+Mount and dismount qemu images
 
 USAGE: mount_image.sh <command> <file.img>
 
@@ -22,12 +19,12 @@ Commands: mount umount
 EOF
   exit 2
 }
-
 message(){
   echo "mount_image.sh: ${@}"
 }
+
 exit_with_error(){
-  echo 1>&2 "mount_image.sh: ERROR: ${2}"
+  echo 1>&2 "mount_image: ERROR: ${2}"
   exit ${1}
 }
 
@@ -55,7 +52,7 @@ _mount-img() {
 
 _umount-img() {
   local -i local_exit=0
-  message "UnMounting ${filename} from ${mount_point} on ${loop_dev}"
+  message "UnMounting ${mount_point} on ${loop_dev}"
   as_root umount ${mount_point}
   local_exit+=${?}
   as_root losetup -d /dev/${loop_dev}
@@ -64,13 +61,13 @@ _umount-img() {
 }
 
 main() {
-  [ -z ${filename} ] && help_and_exit
   case ${command} in
     mount)
+      [ -z ${filename} ] && help_and_exit
       _mount-img || exit_with_error 1 "Could not mount ${filename}"
       ;;
     umount)
-      _umount-img || exit_with_error 1 "Could Not unmount ${filename}"
+      _umount-img || exit_with_error 1 "Could Not unmount ${mount_point}"
       ;;
     *)
       help_and_exit
