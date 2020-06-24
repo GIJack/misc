@@ -50,4 +50,5 @@ switch_checker() {
   done
 }
 
+switch_checker "${@}"
 main ${PARAMS}
