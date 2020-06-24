@@ -34,7 +34,7 @@ switch_checker() {
      NODE_PASSWORD="${2}"
      shift
      ;;
-    --host|-n)
+    --host|-h)
      NODE_ADDRESS="${2}"
      shift
      ;;
