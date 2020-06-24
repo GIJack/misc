@@ -25,10 +25,6 @@ EOF
 }
 
 switch_checker() {
-  # This function checks generates a useable configuration as an array and
-  # filters out --switches and their values leaving just unswitched paramters.
-  # Its important not to run any real code here, and just set variables. The
-  # exception being help_and_exit() which simply prints help text and exits.
   while [ ! -z "$1" ];do
    case "$1" in
     --help|-\?)
