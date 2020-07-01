@@ -3,7 +3,8 @@
 password="${@}"
 
 while [ -z ${password} ];do
-  read -p "Enter new TOR Password: " password
+  read -s -p "Enter new TOR Password: " password
+  echo ""
 done
 
 tor --hash-password "${password}"

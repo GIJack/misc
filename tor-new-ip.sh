@@ -5,6 +5,10 @@ NODE_ADDRESS=127.0.0.1
 NODE_PASSWORD=""
 
 main() {
+  while [ -z $NODE_PASSWORD ];do
+   read -s -p "Enter TOR Password: " NODE_PASSWORD
+   echo ""
+  done
   printf "AUTHENTICATE \"${NODE_PASSWORD}\"\r\nSIGNAL NEWNYM\r\n" | nc ${NODE_ADDRESS} 9051
 }
 
