@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-command="${1}"
-filename="${2}"
-loop_dev=loop1
-mount_point="${HOME}/mnt"
+COMMAND="${1}"
+FILENAME="${2}"
+LOOP_DEV=loop1
+MOUNT_POINT="${HOME}/mnt"
 ROOT_METHOD="sudo"
 
 help_and_exit(){
@@ -14,7 +14,7 @@ Mount and dismount qemu images
 
 USAGE: mount_image.sh <command> <file.img>
 
-Commands: mount umount
+Commands: mount umount ls
 
 EOF
   exit 2
@@ -42,10 +42,10 @@ as_root(){
 
 _mount-img() {
   local -i local_exit=0
-  message "Mounting ${filename} on ${loop_dev} on ${mount_point}"
-  as_root losetup -P ${loop_dev} "${filename}"
+  message "Mounting ${FILENAME} on ${LOOP_DEV} on ${MOUNT_POINT}"
+  as_root losetup -P ${LOOP_DEV} "${FILENAME}"
   local_exit+=${?}
-  as_root mount /dev/${loop_dev}p1 ${mount_point}
+  as_root mount /dev/${LOOP_DEV}p1 ${MOUNT_POINT}
   local_exit+=${?}
   return ${local_exit}
 }
@@ -53,21 +53,28 @@ _mount-img() {
 _umount-img() {
   local -i local_exit=0
   message "UnMounting ${mount_point} on ${loop_dev}"
-  as_root umount ${mount_point}
+  as_root umount ${MOUNT_POINT}
   local_exit+=${?}
-  as_root losetup -d /dev/${loop_dev}
+  as_root losetup -d /dev/${LOOP_DEV}
   local_exit+=${?}
   return ${local_exit}
 }
 
+_list_mounts(){
+  exit_with_error 4 "not implemented yet"
+}
+
 main() {
-  case ${command} in
+  case ${COMMAND} in
     mount)
-      [ -z ${filename} ] && help_and_exit
-      _mount-img || exit_with_error 1 "Could not mount ${filename}"
+      [ -z ${FILENAME} ] && help_and_exit
+      _mount-img || exit_with_error 1 "Could not mount ${FILENAME}"
       ;;
     umount)
-      _umount-img || exit_with_error 1 "Could Not unmount ${mount_point}"
+      _umount-img || exit_with_error 1 "Could Not unmount ${MOUNT_POINT}"
+      ;;
+    ls)
+      list-mounts || exit_with_error 1 "Couldn't list mounts???"
       ;;
     *)
       help_and_exit
