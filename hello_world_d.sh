@@ -1,6 +1,6 @@
 #!/bin/sh
-# Test daemon. Gives a prints "hello world" and gives port number it is
-# listening on. Useful for testing network connections and setup
+# Test daemon. Listens on a network port and responds with hello world and 
+# port number.
 
 port=1337
 while true;do
