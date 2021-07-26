@@ -80,14 +80,15 @@ create_swap_file(){
 
 emergency_swap_on(){
   message "Turning emergency swap on"
-  chmod 0 ${SWAP_FILE} || warn "Could not set permissions on ${SWAP_FILE}"
-  swapon ${SWAP_FILE} || exit_with_error 1 "Could not swapon, root?"
+  [ ! -f "${SWAP_FILE}" ] && exit_with_error 2 "Swapfile not found, did you init first?"
+  chmod 0 "${SWAP_FILE}" || warn "Could not set permissions on ${SWAP_FILE}"
+  swapon "${SWAP_FILE}" || exit_with_error 1 "Could not swapon, root?"
 }
 
 emergency_swap_off(){
   message "Turning emergency swap off, and resetting"
   submsg "Swapoff"
-  swapoff ${SWAP_FILE} || exit_with_error 1 "Could not swapoff, root?"
+  swapoff "${SWAP_FILE}" || exit_with_error 1 "Could not swapoff, root?"
   submsg "Wipe"
   ${WIPE_CMD} "${SWAP_FILE}" || warn "Wipe on ${SWAP_FILE} failed"
   submsg "Reset"
