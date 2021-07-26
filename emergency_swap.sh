@@ -71,12 +71,9 @@ create_swap_file(){
   fi
 
   message "Creating emergency swap"
-  dd if="${FILL_SRC}" of="${SWAP_FILE}" bs=${block_size} count=${SIZE} status=progress
-  exit_code+=${?}
-  mkswap ${SWAP_FILE}
-  exit_code+=${?}
-  chmod 0 ${SWAP_FILE}
-  exit_code+=${?}
+  dd if="${FILL_SRC}" of="${SWAP_FILE}" bs=${block_size} count=${SIZE} status=progress || exit_code+=1
+  mkswap ${SWAP_FILE} || exit_code+=1
+  chmod 0 ${SWAP_FILE} || exit_code+=1
 
   return ${exit_code}
 }
