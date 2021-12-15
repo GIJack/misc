@@ -40,7 +40,7 @@ prevent data leakage. Config on the top of the script
 		  swap file
 
 EOF
-  exit 2
+  exit 4
 }
 
 message(){
