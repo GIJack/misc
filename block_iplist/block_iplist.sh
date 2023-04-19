@@ -48,8 +48,8 @@ _start(){
 
 _stop(){
   local -i errors
-  for item in "${BLOCK_LIST}";do
-    iptables_clean "${item}" || errors+=1
+  for item in ${BLOCK_LIST};do
+    iptables_clear "${item}" || errors+=1
   done
   return ${errors}
 }
@@ -57,7 +57,7 @@ _stop(){
 main() {
    local -i errors=0
    local command="${1}"
-   message "Applying IP address block list from ${BLOCK_LIST_FILE}"
+   message "Bulk IP Address Block Tool. Loading ips from: ${BLOCK_LIST_FILE}"
    BLOCK_LIST="$(cat ${BLOCK_LIST_FILE})" || exit_with_error 1 "Could not read Block List File ${BLOCK_LIST_FILE}. Ensure this file exists and is readable, and try again"
 
    [ -z "${BLOCK_LIST}" ] && exit_with_error 2 "Blocklist is empty. check contents: ${BLOCK_LIST_FILE}"
@@ -65,9 +65,11 @@ main() {
    
    case "${command}" in
      start)
+       submsg "Blocking IPs"
        _start || errors+=${?}
        ;;
      stop)
+       submsg "Removing IP Blocks"
        _stop || errors+=${?}
        ;;
     *)
