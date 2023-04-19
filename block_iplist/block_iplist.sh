@@ -8,9 +8,12 @@ BLOCK_CHAIN=DROP #If you are running something like ninja-ids, you can use LOG_D
 
 help_and_exit(){
   cat 1>&2 << EOF
-iptables_block_iplist.sh:
+block_iplist.sh:
 Reads IP addresses from a text file, and blocks them with iptables. One IP
-address per line, no comments or other information allowed
+address per line, no comments or other information allowed.
+
+    USAGE:
+    ./block_iplist.sh [start|stop|reload]
 EOF
   exit 4
 }
@@ -47,10 +50,16 @@ _start(){
 }
 
 _stop(){
-  local -i errors
   for item in ${BLOCK_LIST};do
     iptables_clear "${item}" || errors+=1
   done
+  return ${errors}
+}
+
+_reload(){
+  local -i errors=0
+  _stop || errors+=${errors}
+  _start || errors+=${errors}
   return ${errors}
 }
 
@@ -71,6 +80,10 @@ main() {
      stop)
        submsg "Removing IP Blocks"
        _stop || errors+=${?}
+       ;;
+     reload)
+       submsg "Reloading IP Block rules"
+       _reload || errors+=${?}
        ;;
     *)
       help_and_exit
