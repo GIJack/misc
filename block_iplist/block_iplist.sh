@@ -14,6 +14,7 @@ address per line, no comments or other information allowed.
 
     USAGE:
     ./block_iplist.sh [start|stop|reload]
+
 EOF
   exit 4
 }
