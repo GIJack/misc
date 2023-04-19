@@ -35,11 +35,16 @@ iptables_block(){
   # Use iptables to block and IP address
   local block_ip="${1}"
   iptables -I INPUT -s "${block_ip}" -j "${BLOCK_CHAIN}" || return 1
+  iptables -I OUTPUT -s "${block_ip}" -j "${BLOCK_CHAIN}" || return 1
+  iptables -I FORWARD -s "${block_ip}" -j "${BLOCK_CHAIN}" || return 1
+
 }
 iptables_clear(){
   # Remove an IP Address Block
   local block_ip="${1}"
   iptables -D INPUT -s "${block_ip}" -j "${BLOCK_CHAIN}" || return 1
+  iptables -D OUTPUT -s "${block_ip}" -j "${BLOCK_CHAIN}" || return 1
+  iptables -D FORWARD -s "${block_ip}" -j "${BLOCK_CHAIN}" || return 1
 }
 
 _start(){
