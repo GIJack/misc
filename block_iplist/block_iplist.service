@@ -1,0 +1,18 @@
+[Unit]
+Description=Bulk IPtables block list
+DefaultDependencies=no
+Wants=network-pre.target systemd-modules-load.service local-fs.target
+Before=network-pre.target shutdown.target
+After=systemd-modules-load.service local-fs.target
+Conflicts=shutdown.target
+Documentation=man:netfilter-persistent(8)
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/root/prod_scripts/block_iplist.sh start
+ExecStop=/root/prod_scripts/block_iplist.sh stop
+
+[Install]
+WantedBy=multi-user.target
+
