@@ -59,7 +59,7 @@ _stop(){
     iptables -D OUTPUT -d "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
     pids+="${!} "
     iptables -D FORWARD -s "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
-    pids+="${! "
+    pids+="${!} "
     iptables -D FORWARD -d "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
     pids+="${!} "
   done
