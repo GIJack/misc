@@ -37,13 +37,13 @@ _start(){
   local pids=""
   for item in ${BLOCK_LIST};do
     iptables -I INPUT -s "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
-    pids+="${?} "
+    pids+="${!} "
     iptables -I OUTPUT -d "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
-    pids+="${?} "
+    pids+="${!} "
     iptables -I FORWARD -s "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
-    pids+="${?} "
+    pids+="${!} "
     iptables -I FORWARD -d "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
-    pids+="${?} "
+    pids+="${!} "
   done
   
   wait ${pids}
@@ -55,13 +55,13 @@ _stop(){
   local pids=""
   for item in ${BLOCK_LIST};do
     iptables -D INPUT -s "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
-    pids+="${?} "
+    pids+="${!} "
     iptables -D OUTPUT -d "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
-    pids+="${?} "
+    pids+="${!} "
     iptables -D FORWARD -s "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
-    pids+="${?} "
+    pids+="${! "
     iptables -D FORWARD -d "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
-    pids+="${?} "
+    pids+="${!} "
   done
 
   wait ${pids}
