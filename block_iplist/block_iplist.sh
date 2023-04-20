@@ -44,9 +44,11 @@ _start(){
     pids+="${!} "
     iptables -I FORWARD -d "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
     pids+="${!} "
+    wait ${pids}
+    pids=""
   done
   
-  wait ${pids}
+  
   return ${errors}
 }
 
@@ -62,9 +64,9 @@ _stop(){
     pids+="${!} "
     iptables -D FORWARD -d "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
     pids+="${!} "
+    wait ${pids}
+    pids=""
   done
-
-  wait ${pids}
   return ${errors}
 }
 
