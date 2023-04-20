@@ -8,9 +8,9 @@ BLOCK_LIST_FILE=/etc/iptables/block_ips.txt
 BLOCK_CHAIN=DROP #If you are running something like ninja-ids, you can use LOG_DENY
 
 # How many iptables commands can run concurrently. If you increase this, start
-# stop run faster as more rules are added in paralell. But you run into issues
+# stop run faster as more rules are added in parallel. But you run into issues
 # with running out of memory and ulimits if set to high
-INSTANCE_RATE_LIMIT=50 
+INSTANCE_RATE_LIMIT=200
 ### /CONFIG
 
 help_and_exit(){
