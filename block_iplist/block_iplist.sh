@@ -22,7 +22,7 @@ message(){
   echo "iptables_block_iplist.sh: ${@}"
 }
 submsg(){
-  echo "	${@}"
+  echo "[+]	${@}"
 }
 exit_with_error(){
   echo 1>&2 "iptables_block_iplist.sh: ERROR: ${2}"
@@ -31,34 +31,40 @@ exit_with_error(){
 warn(){
   echo 1>&2 "iptables_block_iplist.sh: ${@}"
 }
-iptables_block(){
-  # Use iptables to block and IP address
-  local block_ip="${1}"
-  iptables -I INPUT -s "${block_ip}" -j "${BLOCK_CHAIN}" || return 1
-  iptables -I OUTPUT -s "${block_ip}" -j "${BLOCK_CHAIN}" || return 1
-  iptables -I FORWARD -s "${block_ip}" -j "${BLOCK_CHAIN}" || return 1
-
-}
-iptables_clear(){
-  # Remove an IP Address Block
-  local block_ip="${1}"
-  iptables -D INPUT -s "${block_ip}" -j "${BLOCK_CHAIN}" || return 1
-  iptables -D OUTPUT -s "${block_ip}" -j "${BLOCK_CHAIN}" || return 1
-  iptables -D FORWARD -s "${block_ip}" -j "${BLOCK_CHAIN}" || return 1
-}
 
 _start(){
   local -i errors=0
+  local pids=""
   for item in ${BLOCK_LIST};do
-    iptables_block "${item}" || errors+=1
+    iptables -I INPUT -s "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
+    pids+="${?} "
+    iptables -I OUTPUT -d "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
+    pids+="${?} "
+    iptables -I FORWARD -s "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
+    pids+="${?} "
+    iptables -I FORWARD -d "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
+    pids+="${?} "
   done
+  
+  wait ${pids}
   return ${errors}
 }
 
 _stop(){
+  local -i errors=0
+  local pids=""
   for item in ${BLOCK_LIST};do
-    iptables_clear "${item}" || errors+=1
+    iptables -D INPUT -s "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
+    pids+="${?} "
+    iptables -D OUTPUT -d "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
+    pids+="${?} "
+    iptables -D FORWARD -s "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
+    pids+="${?} "
+    iptables -D FORWARD -d "${item}" -j "${BLOCK_CHAIN}" || errors+=1 &
+    pids+="${?} "
   done
+
+  wait ${pids}
   return ${errors}
 }
 
