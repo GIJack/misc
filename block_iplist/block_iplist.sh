@@ -10,7 +10,7 @@ BLOCK_CHAIN=DROP #If you are running something like ninja-ids, you can use LOG_D
 # How many iptables commands can run concurrently. If you increase this, start
 # stop run faster as more rules are added in parallel. But you run into issues
 # with running out of memory and ulimits if set to high
-INSTANCE_RATE_LIMIT=400
+INSTANCE_RATE_LIMIT=250
 ### /CONFIG
 
 help_and_exit(){
