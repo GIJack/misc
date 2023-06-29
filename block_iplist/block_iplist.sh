@@ -59,8 +59,6 @@ _start(){
   
   # final wait for pids
   wait ${pids}
-  
-  return ${errors}
 }
 
 _stop(){
@@ -92,7 +90,7 @@ _reload(){
 }
 
 main() {
-   declare -i errors=0
+   declare -i ERRORS=0
    local command="${1}"
    message "Bulk IP Address Block Tool. Loading ips from: ${BLOCK_LIST_FILE}"
    BLOCK_LIST="$(cat ${BLOCK_LIST_FILE})" || exit_with_error 1 "Could not read Block List File ${BLOCK_LIST_FILE}. Ensure this file exists and is readable, and try again"
