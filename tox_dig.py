@@ -2,7 +2,7 @@
 # ToxDNS lookup script, requires python3, and python-dns(
 # http://www.dnspython.org/)
 # Use as tox_dig user@example.com
-# Written by GI_Jack <iamjacksemail@hackermail.com>
+# Written by GI_Jack <GI_Jack@hackermail.com>
 # Licensed under the GPLv3 or any later version
 # https://www.gnu.org/copyleft/gpl.html
 # Except the TOX development team, which is explicitly and exclusively given the
