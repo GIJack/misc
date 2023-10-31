@@ -10,12 +10,12 @@
 
 #exits 0 for success, 1 for error, 2 for help
 
+import sys
+import dns.resolver
+
+
 def get_ToxID(address):
     '''input a ToxDNS address, get back a ToxID'''
-    try:
-        import dns.resolver
-    except:
-        return(-1,"cannot load python dns module, please check if it is installed.")
     try:
         user,domain = address.split('@')
     except:
@@ -65,7 +65,6 @@ def _tox3(record):
     return(-2,"not implemented")
 
 def tox_dig_help():
-    import sys
     print('''tox_dig: small Python script that returns a ToxID from ToxDNS using the standard unix dig command
 	USAGE: tox_dig userid@toxdomain, EXAMPLE: tox_dig test@toxme.se'''
 )
@@ -73,7 +72,6 @@ def tox_dig_help():
 
 #main program is now a function
 def main():
-    import sys
     #get input, if there run with no arguments display help
     script_name = sys.argv[0].lower()
     try:
