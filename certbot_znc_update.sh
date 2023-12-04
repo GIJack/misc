@@ -19,14 +19,16 @@ readonly LETSENCRYPT_EMAIL="postmaster@example.com"
 ### /VARIABLES
 
 ### CONSTANTS
-readonly FQDN="$(hostname).${HARBORWAVE_DOMAIN}"
+readonly FQDN="$(hostname)"
 readonly ENCRYPTION_KEY="/etc/letsencrypt/live/${FQDN}/privkey.pem"
 readonly ENCRYPTION_CERT="/etc/letsencrypt/live/${FQDN}/fullchain.pem"
-readonly ZNC_CERT_FILE="/var/lib/znc/.znc/znc.pem"
-readonly ZNC_HOME="/var/lib/znc/"
-readonly ZNC_USER="znc"
+readonly ZNC_CERT_FILE="/home/znc-admin/.znc/znc.pem"
+readonly ZNC_HOME="/home/znc-admin/"
+readonly ZNC_USER="znc-admin"
 readonly DH_PARAM_FILE="/etc/ssl/private/dhparam.pem"
 readonly DH_PARAM_BITS=2048
+readonly TODAY=$(date +%Y%m%d) #Today's date in YYYYMMDD
+readonly CERT_DATE=$(date -d "$(stat --format=%y ${ENCRYPTION_CERT})" +%Y%m%d) #Date of LE Certs in YYYYMMDD
 ### /CONSTANTS
 
 message(){
@@ -105,8 +107,16 @@ main(){
       renew_certbot || ERRORS+=1
       submsg "Regenerating ZNC cert file"
       gen_znc_pem || ERRORS+=1
-      submsg "Restarting ZNC" || ERRORS+=1
-      systemctl restart znc
+      # Only restart ZNC if the cert has recently been reset
+      local cert_age=$(( ${TODAY} - ${CERT_DATE} )) #Lets Encrypt! cert age in days
+      # If the age of the cert is more
+      if [ ${cert_age} -lt 1 ];then
+        submsg "Restarting ZNC"
+        systemctl restart znc || ERRORS+=1
+       else
+        submsg "Certificate not renewed recently, skipping reset"
+      fi
+
       ;;
     *)
       help_and_exit
