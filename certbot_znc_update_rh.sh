@@ -49,13 +49,11 @@ exit_with_error(){
 
 init_certbot(){
   local -i errors=0
-  local firewalld_service="80/tcp"
+  local firewalld_service="http"
   
   firewall-cmd --add-service=${firewalld_service} --zone=public  || return 9
-  firewall-cmd --reload
   certbot certonly --standalone --domains "${FQDN}" -n --agree-tos --email "${LETSENCRYPT_EMAIL}" || errors+=1
   firewall-cmd --remove-service=${firewalld_service} --zone=public || warn "IPTables rule for certbot left open. Please correct this mantually"
-  firewall-cmd --reload
 
   # Generating DH parms is a one time thing. Technically we have some in znc.pem, but we need a stand alone file. Easiest way
   # to do this in shell is just make a new one
@@ -69,10 +67,8 @@ renew_certbot(){
   local firewalld_service="http"
 
   firewall-cmd --add-service=${firewalld_service} --zone=public  || return 9
-  firewall-cmd --reload 
   /usr/bin/certbot -q renew || error_code=${?}
   firewall-cmd --remove-service=${firewalld_service} --zone=public || warn "IPTables rule for certbot left open. Please correct this mantually"
-  firewall-cmd --reload
 
   return ${error_code}
 }
