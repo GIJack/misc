@@ -14,7 +14,7 @@ EOF
 }
 ### VARIABLES
 # Edit this before use. This is what email your LETS ENCRYPT! certs are registered to
-readonly LETSENCRYPT_EMAIL="postmaster@zerocount.net"
+readonly LETSENCRYPT_EMAIL="postmaster@example.com"
 
 ### /VARIABLES
 
