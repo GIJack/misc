@@ -87,7 +87,7 @@ gen_znc_pem(){
 main(){
   declare -i ERRORS=0
   local command="${1}"
-  [ -z "${HARBORWAVE_DOMAIN}" ] && exit_with_error 2 "No Domain set, no qualified for a Lets Encrypt! cert"
+  [ -z "${FQDN}" ] && exit_with_error 2 "No Domain set, no qualified for a Lets Encrypt! cert"
 
   case ${command} in
     firstrun)
