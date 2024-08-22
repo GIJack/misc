@@ -192,6 +192,9 @@ cmd_checknemail(){
   STATUS=$($MegaCli -LDInfo -Lall -aALL -NoLog | egrep -i 'fail|degrad|error')
   # On bad raid status send email with basic drive information
   if [ "$STATUS" ]; then
+    logger "lsi.sh: RAID array check: FAIL!, sending email to ${EMAIL}"
+    echo "lsi.sh: RAID array check: FAIL!, sending email to ${EMAIL}"
+
     drives_status=$($MegaCli -PDlist -aALL -NoLog | egrep 'Slot|state' | awk '/Slot/{if (x)print x;x="";}{x=(!x)?$0:x" -"$0;}END{print x;}' | sed 's/Firmware state://g')
     echo $message_body | mail -s "${HOSTNAME} - RAID Notification" $EMAIL << EOF
 
@@ -204,7 +207,8 @@ Drives
 $drives_status
 EOF
   else
-    echo "LSI RAID array is fine"
+    echo "lsi.sh: RAID array check: passes"
+    logger "lsi.sh: RAID array check: passes"
   fi
 }
 
