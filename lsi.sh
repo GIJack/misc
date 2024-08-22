@@ -189,9 +189,7 @@ cmd_checknemail(){
   # Check if raid is in good condition
   local drives_status=""
   local gen_status=$(cmd_status)
-  STATUS=$($MegaCli -LDInfo -Lall -aALL -NoLog | egrep -i 'fail|degrad|error') || 
-   logger $("$HOSTNAME cannot get RAID card status";message "Cannot get RAID card status")
-
+  STATUS=$($MegaCli -LDInfo -Lall -aALL -NoLog | egrep -i 'fail|degrad|error')
   # On bad raid status send email with basic drive information
   if [ "$STATUS" ]; then
     drives_status=$($MegaCli -PDlist -aALL -NoLog | egrep 'Slot|state' | awk '/Slot/{if (x)print x;x="";}{x=(!x)?$0:x" -"$0;}END{print x;}' | sed 's/Firmware state://g')
@@ -205,6 +203,8 @@ Drives
 ------
 $drives_status
 EOF
+  else
+    echo "LSI RAID array is fine"
   fi
 }
 
@@ -219,7 +219,7 @@ cmd_allinfo(){
 # Update the LSI card's time with the current operating system time. You may
 # want to setup a cron job to call this method once a day or whenever you
 # think the raid card's time might drift too much. 
-cmd_setting(){
+cmd_settime(){
   local -i errors=0
   $MegaCli -AdpGetTime -aALL -NoLog
   errors+=$?
