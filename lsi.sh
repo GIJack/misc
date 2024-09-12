@@ -43,6 +43,7 @@ enclosures	= list the enclosures
 driveinfo \$N	= info on a specific drive
 createarray	= create an array: lsi.sh createarray <type> <drives>
 secureerase \$N	= securely erase a disk
+secureerase_progress \$N    = Progress of secure erase
 expand		= expand capacitiy of array(s)
 
 EOF
@@ -326,7 +327,12 @@ cmd_createarray(){
 # cmd_secureerase <disk#>
 cmd_secureerase(){
   local disk=${1}
-  ${MegaCli} -SecureErase Start Standard [${ENCLOSURE}:${disk}] -a0
+  ${MegaCli} -SecureErase Start Normal -PhysDrv [${ENCLOSURE}:${disk}] -a0
+}
+
+cmd_secureerase_progress(){
+  local disk=${1}
+  ${MegaCli} -SecureErase ShowProg -PhysDrv [${ENCLOSURE}:${disk}] -a0
 }
 
 # migrate to larger disk sizes
