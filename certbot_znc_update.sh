@@ -110,11 +110,11 @@ main(){
       # Only restart ZNC if the cert has recently been reset
       local cert_age=$(( ${TODAY} - ${CERT_DATE} )) #Lets Encrypt! cert age in days
       # If the age of the cert is more
-      if [ ${cert_age} -lt 1 ];then
+      if [ ${cert_age} -eq 0 ];then
         submsg "Restarting ZNC"
         systemctl restart znc || ERRORS+=1
        else
-        submsg "Certificate not renewed recently, skipping reset"
+        submsg "Certificate not renewed today, skipping reset"
       fi
 
       ;;
